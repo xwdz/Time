@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwdz.site.mapper.PictureMapper">
+
+
+    <!-- 查询所有 -->
+    <select id="findAll" resultType="com.xwdz.site.entity.Picture">
+        SELECT * FROM picture
+    </select>
+
+    <select id="findById" parameterType="String" resultType="com.xwdz.site.entity.Picture">
+
+        SELECT * FROM picture WHERE `id` = #{id}
+
+    </select>
+
+
+    <insert id="create" parameterType="com.xwdz.site.entity.Picture">
+        INSERT INTO picture(`id`, `path`, `desc`, `name`, `uploadTime`, `address`) VALUES (#{id}, #{path}, #{desc}, #{name}, #{uploadTime}, #{address})
+    </insert>
+</mapper>

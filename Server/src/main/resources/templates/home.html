@@ -1,0 +1,66 @@
+	<!DOCTYPE html>
+	<html>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js" ></script>
+	<script src="../static/js/configs.js" ></script>
+
+	<head>
+	<title>Spring Boot + Mybatis Simple</title>
+
+	</head>
+
+	<body>
+
+		name:<input type="text" name="username" id="user"><br/>
+
+		age:<input type="text" name="age" id="age"><br/>
+
+		city:<input type="text" name="age" id="city"><br/>
+
+		address:<input type="text" name="age" id="address"><br/>
+
+		<button type="submit" onclick="login()">Login</button>
+
+		<script type="text/javascript">
+
+			function login(){
+				 var name = document.getElementById('user').value
+				 var age = document.getElementById('age').value
+				 var city = document.getElementById('city').value
+				 var address = document.getElementById('address').value
+
+					var json = {"name": name,"age": age,"city":city,"address":address };
+
+					console.log('data:'+json['name'])
+					console.log('data:'+json['age'])
+					console.log('data:'+json['city'])
+					console.log('data:'+json['address'])
+
+					console.log('getHttpIp():'+getHttpIp())
+					<!-- data: json, -->
+					$.ajax({
+						  url: getHttpIp()+'save/',
+						  type: 'post',
+						  contentType: "application/json;charset=UTF-8",
+						   xhrFields: {
+      						  withCredentials: true //表示发起跨域访问并要求携带Cookie等认证信息
+    						},
+						  success: function(data) {
+								if(data == 200){
+									alert('添加成功')
+								}
+						  },
+						  error: function(XMLHttpRequest, textStatus, errorThrown){
+	  							alert(XMLHttpRequest.status);
+ 	    	                    alert(XMLHttpRequest.readyState);
+	       	                    alert(textStatus);
+						  }
+					});
+
+
+
+			}
+		</script>
+
+	</body>
+
+	</html>
