@@ -63,7 +63,7 @@
 #### 文件的静态链接
 **上传成功的文件均以`baseUrl`+ `/uploads/`+`文件名称`拿到。**
 
-**simple: http://47.106.223.246/uploadsJPEG_20190328_193806.jpg**
+**simple: http://47.106.223.246/uploads/JPEG_20190328_193806.jpg**
 
 
 ### Web
