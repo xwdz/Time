@@ -1,6 +1,9 @@
 ### Time
 `Spring boot` + `Mybatis` 实现`File`的`CRUE`
 
+
+![simple2.png](./image/android_simple2.gif)
+
 > 接口已部署在正式服务器
 
 ### 拿着Api去玩耍(需要Key密匙邮件我~)
@@ -71,8 +74,9 @@
 // TODO
 
 ### Android
+
 ![simple.png](./image/android_simple1.gif)
-![simple2.png](./image/android_simple2.gif)
+
 
 目前实现查询所有照片列表，上传单个文件，以及上传多个文件。
 
