@@ -1,5 +1,5 @@
 ### Time
-`Spring boot` + `Mybatis` 实现`文件`的增删改查。
+`Spring boot` + `Mybatis` 实现`File`的`CRUE`
 
 > 接口已部署在正式服务器
 
@@ -59,6 +59,11 @@
     ]
 }
 ```
+
+#### 文件的静态链接
+**上传成功的文件均以`baseUrl`+ `/uploads/`+`文件名称`拿到。**
+
+**simple: http://47.106.223.246/uploadsJPEG_20190328_193806.jpg**
 
 
 ### Web
