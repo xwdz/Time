@@ -1,6 +1,7 @@
 package com.xwdz.site.controller;
 
 
+import com.github.pagehelper.PageHelper;
 import com.xwdz.site.entity.Picture;
 import com.xwdz.site.entity.Response;
 import com.xwdz.site.mapper.PictureMapper;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,44 +34,50 @@ public class UploadController {
     private String mSaveFilePath;
 
 
-    @PostMapping("upload")
-    public Response<Picture> upload(@RequestParam(value = "file") final MultipartFile file,
-                                    @RequestParam(value = "key") final String key,
-                                    @RequestParam(value = "address", required = false) String address,
-                                    @RequestParam(value = "desc", required = false) String desc,
-                                    HttpServletRequest request,
-                                    HttpServletResponse response) {
+    @PostMapping("uploads")
+    public Response<List<Picture>> upload(@RequestParam(value = "files") final MultipartFile[] files,
+                                          @RequestParam(value = "key") final String key,
+                                          @RequestParam(value = "address", required = false) String address,
+                                          @RequestParam(value = "desc", required = false) String desc,
+                                          HttpServletRequest request,
+                                          HttpServletResponse response) {
 
-        if (ApiSignature.getImpl().checkSignatureFail(key)) {
+        if (SignatureController.getImpl().checkSignatureFail(key)) {
             return Response.fail(Constant.ERROR_KEY_FAIL, "key is error!");
         }
 
-        if (file == null) {
-            return Response.fail(Constant.ERROR_MISS_UPLOAD, "please upload file!");
+        if (files == null) {
+            return Response.fail(Constant.ERROR_MISS_UPLOAD, "please upload files!");
         }
 
-
         try {
-            File saveFile = createSaveFile(file.getOriginalFilename());
+            List<Picture> results = new ArrayList<>();
+            for (int i = 0; i < files.length; i++) {
+                MultipartFile file = files[i];
+                File saveFile = createSaveFile(file.getOriginalFilename());
 
-            ThreadManager.execute(() -> {
-                try {
-                    FileUtils.save(file.getBytes(), saveFile);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+                ThreadManager.execute(() -> {
+                    try {
+                        FileUtils.save(file.getBytes(), saveFile);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
 
-            Picture picture = new Picture();
-            picture.setPath(saveFile.getAbsolutePath());
-            picture.setAddress(CommUtils.isEmpty(address) ? "" : address);
-            picture.setUploadTime(String.valueOf(System.currentTimeMillis()));
-            picture.setDesc(CommUtils.isEmpty(desc) ? "" : desc);
-            picture.setId(CommUtils.generateId());
-            picture.setName(saveFile.getName());
+                Picture picture = new Picture();
+                picture.setPath(saveFile.getAbsolutePath());
+                picture.setAddress(CommUtils.isEmpty(address) ? "" : address);
+                picture.setUploadTime(String.valueOf(System.currentTimeMillis()));
+                picture.setDesc(CommUtils.isEmpty(desc) ? "" : desc);
+                picture.setId(CommUtils.generateId());
+                picture.setName(saveFile.getName());
+                picture.setUkey(key);
 
-            mPictureMapper.create(picture);
-            return Response.ok(picture);
+                mPictureMapper.create(picture);
+                results.add(picture);
+            }
+
+            return Response.ok(results);
 
 
         } catch (Throwable e) {
@@ -84,11 +92,11 @@ public class UploadController {
             @RequestParam("key") String key,
             @RequestParam("id") String id) {
 
-        if (ApiSignature.getImpl().checkSignatureFail(key)) {
+        if (SignatureController.getImpl().checkSignatureFail(key)) {
             return Response.fail(Constant.ERROR_KEY_FAIL, "key is error!");
         }
 
-        Picture picture = mPictureMapper.findById(id);
+        Picture picture = mPictureMapper.findById(id, key);
         if (picture != null) {
             return Response.ok(picture);
         }
@@ -96,12 +104,15 @@ public class UploadController {
     }
 
     @GetMapping("queryAll")
-    public Response<List<Picture>> queryAll(@RequestParam("key") String key) {
-        if (ApiSignature.getImpl().checkSignatureFail(key)) {
+    public Response<List<Picture>> queryAll(@RequestParam("key") String key,
+                                            @RequestParam(value = "pageNum", required = false, defaultValue = "1") int number,
+                                            @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize) {
+        if (SignatureController.getImpl().checkSignatureFail(key)) {
             return Response.fail(Constant.ERROR_KEY_FAIL, "key is error!");
         }
-
-        return Response.ok(mPictureMapper.findAll());
+        PageHelper.startPage(number, pageSize);
+        List<Picture> list = mPictureMapper.findAll(key);
+        return Response.ok(list);
     }
 
 

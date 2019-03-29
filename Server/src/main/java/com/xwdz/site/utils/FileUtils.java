@@ -6,7 +6,7 @@ import java.io.FileOutputStream;
 
 public class FileUtils {
 
-    public static synchronized void save(byte[] bytes, File saveFile) {
+    public static void save(byte[] bytes, File saveFile) {
 
         FileOutputStream outputStream = null;
         BufferedOutputStream bufferedOutputStream = null;
@@ -16,7 +16,7 @@ public class FileUtils {
             bufferedOutputStream = new BufferedOutputStream(outputStream);
             bufferedOutputStream.write(bytes);
             bufferedOutputStream.flush();
-
+            Logger.i("save File :" + saveFile.getName());
         } catch (Throwable e) {
             e.printStackTrace();
         } finally {

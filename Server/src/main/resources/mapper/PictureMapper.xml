@@ -3,19 +3,20 @@
 <mapper namespace="com.xwdz.site.mapper.PictureMapper">
 
 
-    <!-- 查询所有 -->
     <select id="findAll" resultType="com.xwdz.site.entity.Picture">
-        SELECT * FROM picture
+        SELECT * FROM picture WHERE ukey = #{key} ORDER by uploadTime DESC
     </select>
 
-    <select id="findById" parameterType="String" resultType="com.xwdz.site.entity.Picture">
 
-        SELECT * FROM picture WHERE `id` = #{id}
+    <select id="findById" resultType="com.xwdz.site.entity.Picture">
+
+        SELECT * FROM picture WHERE id = #{id} and ukey = #{key}
 
     </select>
 
 
     <insert id="create" parameterType="com.xwdz.site.entity.Picture">
-        INSERT INTO picture(`id`, `path`, `desc`, `name`, `uploadTime`, `address`) VALUES (#{id}, #{path}, #{desc}, #{name}, #{uploadTime}, #{address})
+        INSERT INTO picture(`id`, `path`, `desc`, `name`, `uploadTime`, `address` , `ukey`) VALUES (#{id}, #{path},
+        #{desc}, #{name}, #{uploadTime}, #{address}, #{ukey})
     </insert>
 </mapper>

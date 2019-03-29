@@ -1,5 +1,11 @@
 server:
   port: 8082
+  multipart:
+    enabled: true
+    maxFileSize: 1024MB
+    maxRequestSize: 1024MB
+  tomcat:
+    max-http-header-size: 8192
 
 
 upload:
@@ -18,9 +24,9 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       #基本属性
 #      url: jdbc:mysql://47.106.223.246:80/site_server?characterEncoding=utf-8
-      url: jdbc:mysql://47.106.223.246:3306/site_server?characterEncoding=utf-8
+      url: jdbc:mysql://xxx:xx/site_server?characterEncoding=utf-8
       username: root
-      password: 123123
+      password: root
       #配置初始化大小/最小/最大
       initial-size: 1
       min-idle: 1
@@ -47,3 +53,9 @@ thymeleaf:
   encoding: UTF-8
   mode: LEGACYHTML5
   cache: false
+
+pagehelper:
+  helper-dialect: mysql
+  reasonable: false
+  support-methods-arguments: true
+  params: count=countSql

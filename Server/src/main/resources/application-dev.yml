@@ -1,5 +1,12 @@
 server:
   port: 8082
+  multipart:
+    enabled: true
+    maxFileSize: 1024MB
+    maxRequestSize: 1024MB
+  tomcat:
+    max-http-header-size: 8192
+
 
 
 upload:
@@ -46,3 +53,9 @@ thymeleaf:
   encoding: UTF-8
   mode: LEGACYHTML5
   cache: false
+
+pagehelper:
+  helper-dialect: mysql
+  reasonable: false
+  support-methods-arguments: true
+  params: count=countSql

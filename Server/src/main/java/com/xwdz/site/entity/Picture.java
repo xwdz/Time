@@ -14,6 +14,7 @@ public class Picture implements Serializable {
     private String name;
     private String uploadTime;
     private String address;
+    private String ukey;
 
 
     public Picture() {
@@ -65,6 +66,14 @@ public class Picture implements Serializable {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getUkey() {
+        return ukey;
+    }
+
+    public void setUkey(String ukey) {
+        this.ukey = ukey;
     }
 
     @Override
