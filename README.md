@@ -71,8 +71,8 @@
 // TODO
 
 ### Android
-
-![simple.png](./image/simple_android.gif)
+![simple.png](./image/android_simple1.gif)
+![simple2.png](./image/android_simple2.gif)
 
 目前实现查询所有照片列表，上传单个文件，以及上传多个文件。
 
@@ -85,7 +85,7 @@
 
 1. 请配置好 `application-dev.yml` 中连接数据库的用户名和密码
 
-2. 启动前，请创建数据库`site_server`，建表`api_channel`、`picture`
+2. 启动前，请创建数据库`site_server`，建表`api_channel`(字段对应`ApiChannel.java`属性)、`picture`(`对应Picture.java`属性)
 
 3. XwdzApplication.java 中的main方法，访问 http://localhost:8082/ 进行API测试。
 
@@ -93,30 +93,30 @@
 ```
 site
 |-- src
-	  |-- main
-	        |--java/com/xwdz/site
-	        		|-- base (基础类)
-					|-- configs (静态文件配置)
-						   |-- PathConfigs.java 配置静态文件
-					|-- controller (各种controller)
-							|-- ApiSignature.java 验证客户端传参key是否正常	
-							|-- UploadController.java 文件上传，查询接口
-					|-- entity (数据库实体类)
-						    |-- ApiChannel.java 校验key实体类
-						    |-- Picture.java 实体类
-						    |-- Response.java 返回外层包装实体类
-					|-- mapper (mapper文件)
-							 |-- ApiChannelMapper.java 提供查询sql
-							 |-- PictureMapper.java 提供各种sql语句
-					|-- utils (工具)
-					|-- SpringContext.java (用于手动解析mapper接口)
-					|-- XwdzApplication.java
-			|-- resources	
-					|-- mapper 对应的mapper.xml 文件
-					|-- static 静态文件
-					|-- templates html模板文件
-					|-- application.yml 配置文件
-					|-- application-dev.yml 测试配置文件
-					|-- application-release.yml 生产配置文件
+	|-- main
+		|--java/com/xwdz/site
+			|-- base (基础类)
+			|-- configs (静态文件配置)
+				   |-- PathConfigs.java 配置静态文件
+			|-- controller (各种controller)
+					|-- ApiSignature.java 验证客户端传参key是否正常	
+					|-- UploadController.java 文件上传，查询接口
+			|-- entity (数据库实体类)
+				    |-- ApiChannel.java 校验key实体类
+				    |-- Picture.java 实体类
+				    |-- Response.java 返回外层包装实体类
+			|-- mapper (mapper文件)
+					 |-- ApiChannelMapper.java 提供查询sql
+					 |-- PictureMapper.java 提供各种sql语句
+			|-- utils (工具)
+			|-- SpringContext.java (用于手动解析mapper接口)
+			|-- XwdzApplication.java
+		|-- resources	
+			|-- mapper 对应的mapper.xml 文件
+			|-- static 静态文件
+			|-- templates html模板文件
+			|-- application.yml 配置文件
+			|-- application-dev.yml 测试配置文件
+			|-- application-release.yml 生产配置文件
 					
 ```

@@ -103,6 +103,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     dispatchHttpSuccess(isRefresh, data);
                 }
 
+                if (mLoadingDialog.isShowing()){
+                    mLoadingDialog.dismiss();
+                }
+
                 if (mSwipeRefreshLayout.isRefreshing()) {
                     mSwipeRefreshLayout.post(new Runnable() {
                         @Override
@@ -229,22 +233,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE) {
                 List<String> list = Matisse.obtainPathResult(data);
-                dispatchUploadHttp(list, true);
+                dispatchActivityResultUploadHttp(list, true);
             }
         }
     }
 
-    private void dispatchUploadHttp(List<String> list, final boolean isRefresh) {
+    private void dispatchActivityResultUploadHttp(List<String> list, final boolean isRefresh) {
         try {
             mLoadingDialog.show();
             mPageNumber = 1;
             mPictureModelProvide.upload(list, new JsonCallBack<Response<List<Picture>>>() {
                 @Override
                 public void onSuccess(Call call, Response<List<Picture>> response) {
-                    mLoadingDialog.stopLoading();
                     if ("200".equals(response.code)) {
-                        dispatchHttpSuccess(isRefresh, response.data);
+                        requestListHttp(true);
                     }
+
                 }
 
                 @Override
