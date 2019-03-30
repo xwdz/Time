@@ -97,30 +97,30 @@
 ```
 site
 |-- src
-	|-- main
-		|--java/com/xwdz/site
-			|-- base (基础类)
-			|-- configs (静态文件配置)
-				   |-- PathConfigs.java 配置静态文件
-			|-- controller (各种controller)
-					|-- ApiSignature.java 验证客户端传参key是否正常	
-					|-- UploadController.java 文件上传，查询接口
-			|-- entity (数据库实体类)
-				    |-- ApiChannel.java 校验key实体类
-				    |-- Picture.java 实体类
-				    |-- Response.java 返回外层包装实体类
-			|-- mapper (mapper文件)
-					 |-- ApiChannelMapper.java 提供查询sql
-					 |-- PictureMapper.java 提供各种sql语句
-			|-- utils (工具)
-			|-- SpringContext.java (用于手动解析mapper接口)
-			|-- XwdzApplication.java
-		|-- resources	
-			|-- mapper 对应的mapper.xml 文件
-			|-- static 静态文件
-			|-- templates html模板文件
-			|-- application.yml 配置文件
-			|-- application-dev.yml 测试配置文件
-			|-- application-release.yml 生产配置文件
+  |-- main
+	|--java/com/xwdz/site
+		  |-- base (基础类)
+		  |-- configs (静态文件配置)
+			   |-- PathConfigs.java 配置静态文件
+		  |-- controller (各种controller)
+				|-- SignatureController.java 验证客户端传参key是否正常	
+				|-- UploadController.java 文件上传，查询接口
+		  |-- entity (数据库实体类)
+			    |-- ApiChannel.java 校验key实体类
+			    |-- Picture.java 实体类
+			    |-- Response.java 返回外层包装实体类
+		  |-- mapper (mapper文件)
+				 |-- ApiChannelMapper.java 提供查询sql
+				 |-- PictureMapper.java 提供各种sql语句
+		  |-- utils (工具)
+		  |-- SpringContext.java (用于手动解析mapper接口)
+		  |-- XwdzApplication.java
+	|-- resources	
+		  |-- mapper 对应的mapper.xml 文件
+		  |-- static 静态文件
+		  |-- templates html模板文件
+		  |-- application.yml 配置文件
+		  |-- application-dev.yml 测试配置文件
+		  |-- application-release.yml 生产配置文件
 					
 ```
