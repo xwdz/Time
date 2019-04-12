@@ -21,7 +21,6 @@
         android:layout_height="wrap_content"
         android:paddingBottom="12dp"
         android:paddingTop="12dp"
-        android:textColor="@color/text_color_tip"
         android:textSize="16sp"
         tools:text="tesadsadasdasdas是的阿斯达阿斯达阿斯达阿斯达阿斯达阿斯达阿斯达按时大声道阿斯达 as"/>
 

@@ -6,32 +6,23 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.github.nukc.LoadMoreWrapper.LoadMoreAdapter;
 import com.github.nukc.LoadMoreWrapper.LoadMoreWrapper;
-import com.xwdz.http.callback.JsonCallBack;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.xwdz.time.adpater.MainAdapter;
 import com.xwdz.time.entity.Picture;
-import com.xwdz.time.entity.Response;
-import com.xwdz.time.model.PictureModelProvide;
+import com.xwdz.time.repository.PictureListModel;
+import com.xwdz.time.repository.UploadFileModel;
 import com.xwdz.time.ui.MoreFooterView;
-import com.xwdz.time.util.LoadingDialog;
 import com.xwdz.time.util.PermissionUtils;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
@@ -41,33 +32,95 @@ import com.zhihu.matisse.internal.entity.CaptureStrategy;
 import java.io.IOException;
 import java.util.List;
 
-import okhttp3.Call;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static final int REQUEST_CODE = 200;
-    private static final int MAX_COUNT    = 9;
+    private static final String TAG = MainActivity.class.getSimpleName();
 
-    private PictureModelProvide mPictureModelProvide = new PictureModelProvide();
-    private RecyclerView       mMainRecyclerView;
+    private static final int REQUEST_CODE = 200;
+    private static final int MAX_COUNT = 9;
+
+    private RecyclerView mMainRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private MainAdapter        mMainAdapter;
-    private LoadingDialog      mLoadingDialog;
+    private MainAdapter mMainAdapter;
+    private ProgressBar mProgressBar;
 
     private int mPageNumber = 1;
     private LoadMoreWrapper mLoadMoreWrapper;
 
 
+    private PictureListModel mPictureListModel;
+    private UploadFileModel mUploadFileModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mLoadingDialog = new LoadingDialog(MainActivity.this);
+        mProgressBar = findViewById(R.id.progressBar);
+
+        mPictureListModel = ViewModelProviders.of(MainActivity.this).get(PictureListModel.class);
+        mUploadFileModel = ViewModelProviders.of(MainActivity.this).get(UploadFileModel.class);
+
         initView();
 
-        PermissionUtils.getInstace().fullLauncherPermission(this);
+        List<String> pers = PermissionUtils.getInstace().fullLauncherPermission(this);
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(pers.toArray(new String[pers.size()]), 1);
+        }
+
 
         requestListHttp(true);
+
+
+        mUploadFileModel.getModel().observe(MainActivity.this, new Observer<List<Picture>>() {
+            @Override
+            public void onChanged(List<Picture> pictures) {
+                if (pictures != null && !pictures.isEmpty()) {
+                    requestListHttp(true);
+                }
+
+                if (mProgressBar.getVisibility() == View.VISIBLE){
+                    mProgressBar.setVisibility(View.GONE);
+                }
+            }
+
+        });
+
+        mPictureListModel.getModel().observe(MainActivity.this, new Observer<List<Picture>>() {
+            @Override
+            public void onChanged(List<Picture> data) {
+                if (data != null && !data.isEmpty()) {
+                    Log.e(TAG, "observe size:" + data.size());
+                    dispatchHttpSuccess(mPictureListModel.isRefresh(), data);
+                }
+
+                if (mProgressBar.getVisibility() == View.VISIBLE){
+                    mProgressBar.setVisibility(View.GONE);
+                }
+
+                if (mSwipeRefreshLayout.isRefreshing()) {
+                    mSwipeRefreshLayout.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSwipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
+                }
+            }
+        });
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -84,7 +137,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setListener(new LoadMoreAdapter.OnLoadMoreListener() {
                     @Override
                     public void onLoadMore(LoadMoreAdapter.Enabled enabled) {
-                        Log.i("TAG", "enable:" + enabled.getLoadMoreEnabled());
                         if (enabled.getLoadMoreEnabled()) {
                             mPageNumber++;
                             requestListHttp(false);
@@ -95,33 +147,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void requestListHttp(final boolean isRefresh) {
-        mPictureModelProvide.request(mPageNumber, new JsonCallBack<Response<List<Picture>>>() {
-            @Override
-            public void onSuccess(Call call, Response<List<Picture>> response) {
-                List<Picture> data = response.data;
-                if (data != null && !data.isEmpty()) {
-                    dispatchHttpSuccess(isRefresh, data);
-                }
-
-                if (mLoadingDialog.isShowing()){
-                    mLoadingDialog.dismiss();
-                }
-
-                if (mSwipeRefreshLayout.isRefreshing()) {
-                    mSwipeRefreshLayout.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mSwipeRefreshLayout.setRefreshing(false);
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onFailure(Call call, Exception e) {
-
-            }
-        });
+        mPictureListModel.load(mPageNumber, isRefresh);
     }
 
 
@@ -145,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(this);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -172,6 +199,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .capture(true)
                 .captureStrategy(new CaptureStrategy(true, "com.xwdz.time.fileprovider"))
                 .forResult(REQUEST_CODE);//请求码
+
+
     }
 
 
@@ -233,31 +262,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE) {
                 List<String> list = Matisse.obtainPathResult(data);
-                dispatchActivityResultUploadHttp(list, true);
+                callbackActivityResultUpload(list, true);
             }
         }
     }
 
-    private void dispatchActivityResultUploadHttp(List<String> list, final boolean isRefresh) {
+    private void callbackActivityResultUpload(List<String> list, final boolean isRefresh) {
         try {
-            mLoadingDialog.show();
+            mProgressBar.setVisibility(View.VISIBLE);
+
             mPageNumber = 1;
-            mPictureModelProvide.upload(list, new JsonCallBack<Response<List<Picture>>>() {
-                @Override
-                public void onSuccess(Call call, Response<List<Picture>> response) {
-                    if ("200".equals(response.code)) {
-                        requestListHttp(true);
-                    }
 
-                }
+            mUploadFileModel.upload(list, isRefresh);
 
-                @Override
-                public void onFailure(Call call, Exception e) {
-                    mLoadingDialog.stopLoading();
-
-                    Log.e(MainActivity.class.getSimpleName(), "fail:" + e.toString());
-                }
-            });
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -3,10 +3,12 @@ package com.xwdz.time;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.xwdz.time.entity.Picture;
 
@@ -16,6 +18,8 @@ import com.xwdz.time.entity.Picture;
  */
 public class DetailActivity extends AppCompatActivity {
 
+
+    private static final String BASE_STATIC_URL = "http://47.106.223.246/uploads/";
 
     private Picture mPicture;
 
@@ -40,7 +44,7 @@ public class DetailActivity extends AppCompatActivity {
 
             mDesc.setText(mPicture.getDesc());
             mAddress.setText(mPicture.getAddress());
-            ImageLoader.load(this, "http://47.106.223.246/uploads/" + mPicture.getName(), mImageView);
+            ImageLoader.load(this, BASE_STATIC_URL + mPicture.getName(), mImageView);
         }
     }
 

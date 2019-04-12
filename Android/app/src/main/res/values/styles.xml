@@ -17,15 +17,5 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
-    <style name="loadDialog" parent="Theme.AppCompat.Dialog">
-        <item name="android:windowFrame">@null</item><!--取消默认Dialog的windowFrame框-->
-        <item name="android:windowNoTitle">true</item><!--设置无标题Dialog-->
-        <item name="android:backgroundDimEnabled">false</item><!--是否四周变暗-->
-        <item name="android:windowIsFloating">true</item><!-- 是否悬浮在activity上 -->
-        <item name="android:windowContentOverlay">@null</item><!-- 取消默认ContentOverlay背景 -->
-        <!--取消window默认背景 不然四角会有黑影-->
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowIsTranslucent">true</item>
-    </style>
 
 </resources>

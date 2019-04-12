@@ -7,16 +7,18 @@
 package com.xwdz.time.ui;
 
 import android.content.Context;
-import android.support.v4.content.res.ResourcesCompat;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.content.res.ResourcesCompat;
+
 import com.xwdz.time.R;
 
 
-public class MoreFooterView extends android.support.v7.widget.AppCompatTextView {
+public class MoreFooterView extends AppCompatTextView {
     public MoreFooterView(Context context) {
         super(context);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(

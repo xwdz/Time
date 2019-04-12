@@ -1,6 +1,9 @@
-package com.xwdz.time.model;
+package com.xwdz.time.repository;
 
 import android.util.Log;
+
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.xwdz.http.QuietHttp;
 import com.xwdz.http.callback.JsonCallBack;
@@ -12,33 +15,29 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.Call;
+
 /**
- * 逻辑操作层
- * 1. 获取所有服务器上面图片
- *
  * @author xingwei.huang (xwdz9989@gamil.com)
- * @since 2019/3/26
+ * @since 2019/4/11
  */
-public class PictureModelProvide {
+public class UploadFileModel extends ViewModel {
 
-    private static final String TAG = PictureModelProvide.class.getSimpleName();
+    private MutableLiveData<List<Picture>> mModel = new MutableLiveData<>();
 
-    private static final String URL_QUERY  = "http://47.106.223.246:80/file/queryAll";
+    private static final String TAG = UploadFileModel.class.getSimpleName();
+
     private static final String URL_UPLOAD = "http://47.106.223.246:80/file/uploads";
 
-    /**
-     * 请求服务器所有图片
-     *
-     * @param pageNumber
-     * @param callBack
-     */
-    public void request(int pageNumber, JsonCallBack<Response<List<Picture>>> callBack) {
-        QuietHttp.getImpl()
-                .get(URL_QUERY)
-                .addParams("pageNum", String.valueOf(pageNumber))
-                .addParams("pageSize", String.valueOf("5"))
-                .addParams("key", "10926a9165054566b6df6a8410e45f08")
-                .execute(callBack);
+    public MutableLiveData<List<Picture>> getModel() {
+        return mModel;
+    }
+
+
+    private boolean isRefresh;
+
+    public boolean isRefresh() {
+        return isRefresh;
     }
 
     /**
@@ -46,7 +45,9 @@ public class PictureModelProvide {
      *
      * @param list
      */
-    public void upload(List<String> list, JsonCallBack<Response<List<Picture>>> callBack) throws IOException {
+    public void upload(List<String> list,boolean isRefresh) throws IOException {
+        this.isRefresh = isRefresh;
+
         if (list == null || list.isEmpty()) {
             return;
         }
@@ -72,14 +73,24 @@ public class PictureModelProvide {
                 .addParams("desc", "phone")
                 .addParams("key", "10926a9165054566b6df6a8410e45f08")
                 .uploadFiles("files", uploadFiles)
-                .execute(callBack);
+                .execute(new JsonCallBack<Response<List<Picture>>>() {
+                    @Override
+                    public void onFailure(Call call, Exception e) {
+                        mModel.postValue(null);
+                    }
+
+                    @Override
+                    public void onSuccess(Call call, Response<List<Picture>> response) {
+                        mModel.postValue(response.data);
+                    }
+                });
 
     }
 
     private String getFileName(String path) {
         int index = path.lastIndexOf(".");
         if (index != -1) {
-            return path.substring(index, path.length());
+            return path.substring(index);
         }
         return System.currentTimeMillis() + "";
     }

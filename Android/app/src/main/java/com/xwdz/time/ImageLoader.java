@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -21,23 +22,8 @@ import com.xwdz.time.util.GlideRoundTransform;
 public class ImageLoader {
 
 
-    public synchronized static Drawable loadApkIcon(Context context, String filePath) {
-        PackageManager pm = context.getPackageManager();
-        PackageInfo pkgInfo = pm.getPackageArchiveInfo(filePath, PackageManager.GET_ACTIVITIES);
-        if (pkgInfo != null) {
-            ApplicationInfo appInfo = pkgInfo.applicationInfo;
-            appInfo.sourceDir = filePath;
-            appInfo.publicSourceDir = filePath;
-//            String appName = pm.getApplicationLabel(appInfo).toString();// 得到应用名
-//            String packageName = appInfo.packageName; // 得到包名
-//            String version = pkgInfo.versionName; // 得到版本信息
-            return pm.getApplicationIcon(appInfo);// 得到图标信息
-        } else {
-            return null;
-        }
-    }
-
-    public synchronized static void load(Context context, String url, ImageView imageView) {
+    public synchronized static void load(Context context, final String url, ImageView imageView) {
+        Log.i("Loader", "url:" + url);
         Glide.with(context)
                 .load(url)
                 .transform(new CenterCrop(context), new GlideRoundTransform(context))
@@ -45,6 +31,7 @@ public class ImageLoader {
                     @Override
                     public void onLoadFailed(Exception e, Drawable errorDrawable) {
                         super.onLoadFailed(e, errorDrawable);
+                        Log.i("Loader", "url:" + url + " error:" + e.toString());
                     }
                 });
     }
