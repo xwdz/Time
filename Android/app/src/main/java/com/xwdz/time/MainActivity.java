@@ -20,8 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.xwdz.time.adpater.MainAdapter;
 import com.xwdz.time.entity.Picture;
-import com.xwdz.time.repository.PictureListModel;
-import com.xwdz.time.repository.UploadFileModel;
+import com.xwdz.time.repository.RepositoryModel;
 import com.xwdz.time.ui.MoreFooterView;
 import com.xwdz.time.util.PermissionUtils;
 import com.zhihu.matisse.Matisse;
@@ -60,8 +59,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private LoadMoreWrapper mLoadMoreWrapper;
 
 
-    private PictureListModel mPictureListModel;
-    private UploadFileModel mUploadFileModel;
+    private RepositoryModel mRepositoryModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         mProgressBar = findViewById(R.id.progressBar);
 
-        mPictureListModel = ViewModelProviders.of(MainActivity.this).get(PictureListModel.class);
-        mUploadFileModel = ViewModelProviders.of(MainActivity.this).get(UploadFileModel.class);
+        mRepositoryModel = ViewModelProviders.of(MainActivity.this).get(RepositoryModel.class);
 
         initView();
 
@@ -85,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         requestListHttp(true);
 
 
-        mUploadFileModel.getModel().observe(MainActivity.this, new Observer<List<Picture>>() {
+        mRepositoryModel.getUploadModel().observe(MainActivity.this, new Observer<List<Picture>>() {
             @Override
             public void onChanged(List<Picture> pictures) {
                 if (pictures != null && !pictures.isEmpty()) {
@@ -99,12 +96,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         });
 
-        mPictureListModel.getModel().observe(MainActivity.this, new Observer<List<Picture>>() {
+        mRepositoryModel.getListModel().observe(MainActivity.this, new Observer<List<Picture>>() {
             @Override
             public void onChanged(List<Picture> data) {
                 if (data != null && !data.isEmpty()) {
                     Log.e(TAG, "observe size:" + data.size());
-                    dispatchHttpSuccess(mPictureListModel.isRefresh(), data);
+                    dispatchHttpSuccess(mRepositoryModel.isRefresh(), data);
                 }
 
                 if (mProgressBar.getVisibility() == View.VISIBLE){
@@ -147,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void requestListHttp(final boolean isRefresh) {
-        mPictureListModel.load(mPageNumber, isRefresh);
+        mRepositoryModel.load(mPageNumber, isRefresh);
     }
 
 
@@ -273,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             mPageNumber = 1;
 
-            mUploadFileModel.upload(list, isRefresh);
+            mRepositoryModel.upload(list, isRefresh);
 
         } catch (IOException e) {
             e.printStackTrace();
